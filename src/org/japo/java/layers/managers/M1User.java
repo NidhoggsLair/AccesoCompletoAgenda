@@ -21,6 +21,7 @@ import org.japo.java.exceptions.ConnectivityException;
 import org.japo.java.layers.services.S2Bussiness;
 import org.japo.java.layers.services.S1User;
 import org.japo.java.libraries.UtilesEntrada;
+import org.japo.java.libraries.UtilesMenu;
 
 /**
  *
@@ -80,10 +81,10 @@ public final class M1User implements S1User {
         bs.abrirAccesoDatos(c);
 
         // Mensaje - Bitácora ( Comentar en producción )
-        System.out.println("Plantilla de Patrón Estructural por Capas Funcionales");
-        System.out.println("=====================================================");
-        System.out.println("Acceso Establecido");
-        System.out.println("---");
+//        System.out.println("Plantilla de Patrón Estructural por Capas Funcionales");
+//        System.out.println("=====================================================");
+//        System.out.println("Acceso Establecido");
+//        System.out.println("---");
     }
 
     // Cierre de la Aplicación
@@ -92,8 +93,8 @@ public final class M1User implements S1User {
         // Cierre Base de Datos
         bs.cerrarAccesoDatos();
 
-        // Mensaje - Bitácora ( Comentar en producción )
-        System.out.println("Acceso Finalizado");
+//        // Mensaje - Bitácora ( Comentar en producción )
+//        System.out.println("Acceso Finalizado");
 
         // Despedida
         System.out.println("---");
@@ -104,7 +105,26 @@ public final class M1User implements S1User {
     // Ejecución de la Aplicación
     @Override
     public final void launchApp() {
-        // ---
+        String menu = UtilesMenu.MENU_PPAL;
+        int opc = UtilesEntrada.leerEntero(menu);
+
+        switch (opc) {
+            case 1:
+                menu = UtilesMenu.MENU_ACT;
+                break;
+            case 2:
+                menu = UtilesMenu.MENU_DATOS;
+                break;
+            case 3:
+                menu = UtilesMenu.MENU_RELAC;
+                break;
+            case 4:
+                menu = UtilesMenu.MENU_UTIL;
+                break;
+            case 0:
+        }
+        System.out.print(menu);
+        int opc2 = UtilesEntrada.leerEntero(menu);
     }
 
     // Lógica de Usuario Adicional
