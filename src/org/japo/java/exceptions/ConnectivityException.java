@@ -1,5 +1,5 @@
-/*
- * Copyright 2021 Joanpaon.
+/* 
+ * Copyright 2021 Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author Joanpaon
+ * @author Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>
  */
 public class ConnectivityException extends SQLException {
 

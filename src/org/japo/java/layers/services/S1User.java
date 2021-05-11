@@ -1,5 +1,5 @@
-/*
- * Copyright 2021 José A. Pacheco Ondoño - japolabs@gmail.com.
+/* 
+ * Copyright 2021 Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import org.japo.java.exceptions.ConnectivityException;
 
 /**
  *
- * @author José A. Pacheco Ondoño - japolabs@gmail.com
+ * @author Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>
  */
 public interface S1User {
 

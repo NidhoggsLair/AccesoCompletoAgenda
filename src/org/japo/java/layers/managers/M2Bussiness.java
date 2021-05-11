@@ -1,5 +1,5 @@
 /* 
- * Copyright 2021 José A. Pacheco Ondoño - joanpaon@gmail.com.
+ * Copyright 2021 Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.japo.java.layers.services.S3Data;
 
 /**
  *
- * @author José A. Pacheco Ondoño - joanpaon@gmail.com
+ * @author Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>
  */
 public final class M2Bussiness implements S2Bussiness {
 
