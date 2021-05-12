@@ -151,9 +151,9 @@ public final class M1User implements S1User {
         // Bucle Gestión Menú
         do {
             // Obtener Opción
-            opc = UtilesEntrada.leerCaracter(UtilesAgenda.MNU_ACT_OPC,
+            opc = UtilesEntrada.leerCaracter(UtilesAgenda.MNU_ACT,
                     UtilesAgenda.MNU_ERROR,
-                    UtilesAgenda.MNU_ACT);
+                    UtilesAgenda.MNU_ACT_OPC);
 
             // Separador
             System.out.println("---");
@@ -217,14 +217,12 @@ public final class M1User implements S1User {
     private void procesarMenuRelaciones() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     // Menu Utilidades
     private void procesarMenuUtilidades() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     // Menu Alumnos
@@ -236,9 +234,9 @@ public final class M1User implements S1User {
         do {
             // Obtener Opción
             opc = UtilesEntrada.leerCaracter(
-                    UtilesAgenda.MNU_ALUM_OPC,
+                    UtilesAgenda.MNU_ALUM,
                     UtilesAgenda.MNU_ERROR,
-                    UtilesAgenda.MNU_ALUM);
+                    UtilesAgenda.MNU_ALUM_OPC);
 
             // Separador
             System.out.println("---");
@@ -265,7 +263,6 @@ public final class M1User implements S1User {
     private void procesarMenuCiclos() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void procesarMenuModulos() {
@@ -307,13 +304,11 @@ public final class M1User implements S1User {
     private void procesarMenuProfesores() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void procesarMenuSegmentos() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void procesarMenuInsercionModulos() {
@@ -346,19 +341,16 @@ public final class M1User implements S1User {
     private void eliminarModulo() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void consultarModulo() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void modificarModulo() {
         System.out.println("Opción Disponible Proximamente");
         UtilesEntrada.hacerPausa();
-        System.out.println("---");
     }
 
     private void listarModulos() {
@@ -372,8 +364,10 @@ public final class M1User implements S1User {
             // Proceso de listado
             if (lista.size() > 0) {
                 // Cabecera Listado
-                System.out.println(" #  Id          Acrónimo   Nombre                                     Código     Horas Curso");
-                System.out.println("=== =========== ========== ========================================== ========== ===== =====");
+                System.out.println(" #  Id          Acrónimo   Nombre          "
+                        + "                           Código     Horas Curso");
+                System.out.println("=== =========== ========== ================"
+                        + "========================== ========== ===== =====");
 
                 // Recorre Lista de Registros
                 for (int i = 0; i < lista.size(); i++) {
@@ -420,9 +414,9 @@ public final class M1User implements S1User {
         do {
             // Obtener Opción
             opc = UtilesEntrada.leerCaracter(
-                    UtilesAgenda.MNU_INSA_OPC,
+                    UtilesAgenda.MNU_INSA,
                     UtilesAgenda.MNU_ERROR,
-                    UtilesAgenda.MNU_INSA);
+                    UtilesAgenda.MNU_INSA_OPC);
 
             // Separador
             System.out.println("---");
@@ -489,8 +483,6 @@ public final class M1User implements S1User {
             //Resultado de la operacion
             System.out.printf("Operacion realizada: insercion %s realizada %n",
                     insercionOK ? "SI" : "NO");
-            //Separador cosmético
-            System.out.println("---");
 
         } catch (NullPointerException | SQLException ex) {
             System.out.println("ERROR: Inserción cancelada" + '\n'
