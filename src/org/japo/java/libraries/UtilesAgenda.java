@@ -27,7 +27,14 @@ public class UtilesAgenda {
     public static String MSG_NOMBR = "Nombre: ";
     public static String MSG_COD = "Código: ";
     public static String MSG_HOR = "Horas Curso: ";
-    public static String MSG_CUR = "Curso ";
+    public static String MSG_CUR = "Curso: ";
+
+    // MSG Alumnos
+    public static String MSG_EXP = "Expediente: ";
+    public static String MSG_APELL = "Apellidos: ";
+    public static String MSG_NIF = "NIF: ";
+    public static String MSG_NAC = "Fecha de Nacimiento: ";
+    public static String MSG_TEL = "Telefono: ";
 
     // Mensaje de Error Genérico
     public static final String MNU_ERROR = "ERROR: Entrada Incorrecta";

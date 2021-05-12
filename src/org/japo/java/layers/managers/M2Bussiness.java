@@ -18,6 +18,7 @@ package org.japo.java.layers.managers;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
+import org.japo.java.entities.Alumno;
 import org.japo.java.entities.Credencial;
 import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
@@ -62,20 +63,74 @@ public final class M2Bussiness implements S2Bussiness {
 
     // Lógica de Negocio Adicional
     @Override
-    public final List<Modulo> obtenerModulos() 
+    public final List<Modulo> obtenerModulos()
             throws NullPointerException, SQLException {
         return ds.obtenerModulos();
     }
 
     @Override
-    public boolean insertarModulosManual(Modulo m) 
+    public boolean insertarModulosManual(Modulo m)
             throws NullPointerException, SQLException {
         return ds.insertarModulos(m);
     }
-    
+
     @Override
-    public int insertarModulosLotes() 
+    public int insertarModulosLotes()
             throws NullPointerException, SQLException {
         return ds.insertarModulosLotes();
+    }
+
+    @Override
+    public int borrarModulos(String[] param)
+            throws NullPointerException, SQLException {
+        return ds.borrarModulos(param);
+    }
+
+    @Override
+    public int borrarAlumnos(String[] param)
+            throws NullPointerException, SQLException {
+        return ds.borrarAlumnos(param);
+    }
+
+    @Override
+    public Modulo consultarModulo(Integer id)
+            throws NullPointerException, SQLException {
+        return ds.consultarModulo(id);
+    }
+
+    @Override
+    public boolean modificarModulo(Modulo m)
+            throws NullPointerException, SQLException {
+        return ds.modificarModulo(m);
+    }
+
+    @Override
+    public boolean insertarAlumnoManual(Alumno a)
+            throws NullPointerException, SQLException {
+        return ds.insertarAlumno(a);
+    }
+
+    @Override
+    public int insertarAlumnosLotes()
+            throws NullPointerException, SQLException {
+        return ds.insertarAlumnosLotes();
+    }
+
+    @Override
+    public Alumno consultarAlumno(String exp)
+            throws NullPointerException, SQLException {
+        return ds.consultarAlumno(exp);
+    }
+
+    @Override
+    public boolean modificarAlumno(Alumno a)
+            throws NullPointerException, SQLException {
+        return ds.modificarAlumno(a);
+    }
+
+    @Override
+    public List<Alumno> obtenerAlumnos() 
+            throws NullPointerException, SQLException {
+        return ds.obtenerAlumnos();
     }
 }

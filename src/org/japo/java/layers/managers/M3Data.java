@@ -26,6 +26,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.japo.java.entities.Alumno;
 import org.japo.java.entities.Credencial;
 import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
@@ -48,10 +51,22 @@ public final class M3Data implements S3Data {
     public static final String PRP_CONN_PASS = "jdbc.conn.pass";
     
     // Propiedades SQL
+    // Modulo
     public static final String PRP_MODULO_LISTA = "agenda.modulo.lista";
     public static final String PRP_MODULO_INSERCION = "agenda.modulo.insercion";
-    public static final String PRP_MODULO_CSV = "agenda.modulos.csv";
-
+    public static final String PRP_MODULOS_CSV = "modulo.insercion.csv";
+    public static final String PRP_MODULO_CSV = "agenda.modulo.csv";
+    public static final String PRP_MODULO_CONSULTAR = "agenda.modulo.consultar";
+    public static final String PRP_MODULO_MODIFICACION = "agenda.modulo.modificacion";
+    public static final String PRP_MODULO_BORRADO = "agenda.modulo.borrado";
+    // Alumno
+    public static final String PRP_ALUMNO_INSERCION = "agenda.alumno.insercion";
+    public static final String PRP_ALUMNOS_CSV = "alumno.insercion.csv";
+    public static final String PRP_ALUMNO_BORRADO = "agenda.alumno.borrado";
+    public static final String PRP_ALUMNO_CONSULTAR = "agenda.alumno.consultar";
+    public static final String PRP_ALUMNO_MODIFICACION = "agenda.alumno.modificacion";
+    public static final String PRP_ALUMNO_LISTA = "agenda.alumno.lista";
+    
     // Sentencia BBDD - Tipo de Acceso
     public static final String STMT_ACCT_TFLY = "TYPE_FORWARD_ONLY";
     public static final String STMT_ACCT_TSIN = "TYPE_SCROLL_INSENSITIVE";
@@ -125,7 +140,8 @@ public final class M3Data implements S3Data {
         //      en la base de datos subyacente.
         //
         // Properties > Selector Tipo de Acceso 
-        String selTacc = prp != null ? prp.getProperty(PRP_STMT_TACC, DEF_STMT_TACC) : DEF_STMT_TACC;
+        String selTacc = prp != null ? 
+                prp.getProperty(PRP_STMT_TACC, DEF_STMT_TACC) : DEF_STMT_TACC;
 
         // Tipo de Acceso
         int tacc;
@@ -158,7 +174,8 @@ public final class M3Data implements S3Data {
         //      para el objeto ResultSet éste podria ser actualizado.
         //        
         // Properties > Selector Concurrencia
-        String selConc = prp != null ? prp.getProperty(PRP_STMT_CONC, DEF_STMT_CONC) : DEF_STMT_CONC;
+        String selConc = prp != null ? 
+                prp.getProperty(PRP_STMT_CONC, DEF_STMT_CONC) : DEF_STMT_CONC;
 
         // Concurrencia
         int conc;
@@ -184,18 +201,21 @@ public final class M3Data implements S3Data {
         try {
             stmt.close();
         } catch (SQLException | NullPointerException e) {
-            throw new ConnectivityException("Error en el Cierre de la Sentencia: " + e.getMessage());
+            throw new ConnectivityException
+        ("Error en el Cierre de la Sentencia: " + e.getMessage());
         }
 
         // Cerrar Conexión con Base de datos
         try {
             conn.close();
         } catch (SQLException | NullPointerException e) {
-            throw new ConnectivityException("Error en el Cierre de Conexión: " + e.getMessage());
+            throw new ConnectivityException
+        ("Error en el Cierre de Conexión: " + e.getMessage());
         }
     }
     //</editor-fold>
 
+    // MODULO
     // Lógica de Acceso a Datos Adicional
     // Obtener Modulos
     @Override
@@ -216,7 +236,6 @@ public final class M3Data implements S3Data {
         return lista;
     }
 
-    // ---
     // Insertar modulos manualmente
     @Override
     public boolean insertarModulos(Modulo m) 
@@ -254,7 +273,6 @@ public final class M3Data implements S3Data {
     }
     
     // ---
-    
     // Insertar Modulo por lotes
     // ResultSet + Fila Actual > Modulo
     private Modulo obtenerModulo(ResultSet rs) 
@@ -269,69 +287,75 @@ public final class M3Data implements S3Data {
         return new Modulo(id, acronimo, nombre, codigo, horasCurso, curso);
     }
 
-    @Override
+   @Override
     public int insertarModulosLotes()
             throws NullPointerException, SQLException {
-        // Ruta Fichero CSV
-        String csv = prp.getProperty(PRP_MODULO_CSV);
-
-        // Importar Fichero CSV > ArrayList<Modulo>
-        List<Modulo> lista = importarModulos(csv);
-
-        // SQL Inserción
-        String sql = prp.getProperty(PRP_MODULO_INSERCION);
-
-        // Filas Afectadas
+        // Filas Insertadas
         int filas = 0;
 
-        // Apertura + Cierre Automático > Prepared Statement
+        // Ruta Fichero CSV
+        String csv = prp.getProperty(PRP_MODULOS_CSV);
+
+        // Importar Módulos
+        List<Modulo> lista = importarModulos(csv);
+
+        // Obtener SQL
+        String sql = prp.getProperty(PRP_MODULO_INSERCION);
+
+        // Prepared Statement 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             for (Modulo m : lista) {
-                filas = insertarModulo(ps, m) ? filas + 1 : filas;
+                filas = insertarModulo(ps, m) ? ++filas : filas;
             }
+        } catch (Exception e) {
+            throw new NullPointerException("Error en la inserción de modulos: "
+                    + e.getMessage());
         }
 
-        // Devolver Filas Afectadas
+        // Devolver Filas Insertadas
         return filas;
     }
-    // Lógica de Acceso a Datos Adicional
 
     private List<Modulo> importarModulos(String csv) {
-        // Lista de Módulos
+        // Contenedor de Módulos
         List<Modulo> lista = new ArrayList<>();
 
+        // Abrir + Utilizar + Cerrar Fichero
         try (
                 FileReader fr = new FileReader(csv);
                 BufferedReader br = new BufferedReader(fr)) {
-            // Declaración de la Linea
             String linea;
-            // Bucle Recorrido del Fichero por Lineas
             do {
-                // Linea Actual recien leida
-                linea = br.readLine().trim();
+                // Leer Linea Actual
+                linea = br.readLine();
 
-                // Linea (String) > Modulo
-                Modulo m = convertirLinea(linea);
+                // Validar Lectura
+                if (linea != null) {
+                    // Limpiar Espacios
+                    linea = linea.trim();
 
-                // Añadir Módulo a la Lista
-                lista.add(m);
-            } while (linea != null && linea.length() > 0);
+                    // Linea > Array Items
+                    String[] items = linea.split("\\s*,\\s*");
+
+                    // Array Items > Modulo
+                    Modulo m = importarModulo(items);
+//                    System.out.println(m);
+                    
+                    // Modulo > Lista
+                    lista.add(m);
+                }
+            } while (linea != null);
         } catch (Exception e) {
+            throw new NullPointerException("Importación CSV Cancelada: "
+                    + e.getMessage());
         }
 
-        // Devolver Lista de Módulos
+        // Devolver Lista
         return lista;
     }
 
-    // String + Separador > String[]
-    private Modulo convertirLinea(String linea) {
-        // Separador Items
-        final String SEPARADOR = "\\s*,\\s*";
-
-        // Lista de Items
-        String[] items = linea.split(SEPARADOR);
-
-        // Campos del Módulo
+    private Modulo importarModulo(String[] items) {
+        // Extraer Campos
         int id = Integer.parseInt(items[0]);
         String acronimo = items[1];
         String nombre = items[2];
@@ -343,25 +367,20 @@ public final class M3Data implements S3Data {
         return new Modulo(id, acronimo, nombre, codigo, horasCurso, curso);
     }
 
-    // Modulo > Insercion BD
-    
-    public boolean insertarModulo(PreparedStatement ps, Modulo m) 
-            throws NullPointerException, SQLException{
-        // Número de filas Afectadas
-        int filas;
-        String _acronimo = "";
+    private boolean insertarModulo(PreparedStatement ps, Modulo m) {
+        // Semaforo de Inserción
+        boolean procesoOK;
 
         try {
-            // Obtener Parametros
+            // Extraer Parametros
             String id = m.getId() + "";
             String acronimo = m.getAcronimo();
-            _acronimo = m.getAcronimo();
             String nombre = m.getNombre();
             String codigo = m.getCodigo();
             String horasCurso = m.getHorasCurso() + "";
             String curso = m.getCurso() + "";
 
-            // Aplicar Parámetros
+            // Asignar Parametros
             ps.setString(1, id);
             ps.setString(2, acronimo);
             ps.setString(3, nombre);
@@ -369,22 +388,392 @@ public final class M3Data implements S3Data {
             ps.setString(5, horasCurso);
             ps.setString(6, curso);
 
-            // Ejecutar Insercion
-            filas = ps.executeUpdate();
-            System.out.printf("Modulo %s SI insertado%n", _acronimo);
-        } catch (SQLException | NullPointerException x) {
-            filas = 0;
-            System.out.printf("Modulo %s NO insertado%n", _acronimo);
+            // Ejecutar prepared Statement
+            procesoOK = ps.executeUpdate() == 1;
+        } catch (SQLException | NullPointerException e) {
+            procesoOK = false;
+        }
+        
+        return procesoOK;
+    }
+    
+    @Override
+    public Modulo consultarModulo(Integer id) 
+            throws NullPointerException, SQLException {
+        // Referencia al Modulo
+        Modulo m = null;
+        
+        // Sentencia SQL
+        String sql = prp.getProperty(PRP_MODULO_CONSULTAR);
+        
+        // Abre Sentencia SQL con Parámetros
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Asignar Parámetros
+            ps.setString(1, id.toString());
+            
+            // Obtener Datos
+            ResultSet rs = ps.executeQuery();
+            
+            // Obtener Campos
+            if (rs.next()) {
+                // Obtener Campos
+//                int id = rs.getInt("id");
+                String acronimo = rs.getString("acronimo");
+                String nombre = rs.getString("nombre");
+                String codigo = rs.getString("codigo");
+                int horasCurso = rs.getInt("horasCurso");
+                int curso = rs.getInt("curso");
+                
+                // Instanciar modulo
+                m = new Modulo(
+                        id, 
+                        acronimo, 
+                        nombre, 
+                        codigo, 
+                        horasCurso, 
+                        curso);
+            } else {
+                throw new NullPointerException("No hay datos con esa ID");
+            }
+        }
+        
+        return m;
+    }
+
+    @Override
+    public int borrarModulos(String[] param) 
+            throws NullPointerException, SQLException {
+        // SQL Borrado 
+        String sql = prp.getProperty(PRP_MODULO_BORRADO);
+        
+        // Crear PreparedStatement
+        PreparedStatement ps = conn.prepareStatement(sql);
+        
+        for (int i = 0; i < param.length; i++) {
+            ps.setString(i + 1, param[i]);
+        }
+        return ps.executeUpdate();
+    }
+    
+    @Override
+    public int borrarAlumnos(String[] param) 
+            throws NullPointerException, SQLException {
+        // SQL Borrado 
+        String sql = prp.getProperty(PRP_ALUMNO_BORRADO);
+
+        // Crear PreparedStatement
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        // Añadir Parámetros
+//        ps.setString(1, "D%");      // Nombre empiece por D
+//        ps.setString(2, "150");     // Numero de horas
+        for (int i = 0; i < param.length; i++) {
+            ps.setString(i + 1, param[i]);
         }
 
+        return ps.executeUpdate();
+    }
+
+    @Override
+    public boolean modificarModulo(Modulo m) 
+            throws NullPointerException, SQLException {
+        // Filas Afectadas
+        int filas;
+
+        // Properties > SQL
+        String sql = prp.getProperty(PRP_MODULO_MODIFICACION);
+        
+        // Extraer Parámetros
+        String id = m.getId() + "";
+        String acronimo = m.getAcronimo();
+        String nombre = m.getNombre();
+        String codigo = m.getCodigo();
+        String horasCurso = m.getHorasCurso() + "";
+        String curso = m.getCurso() + "";
+        
+        // Sentencia Preparada
+        try (PreparedStatement ps = conn.prepareStatement(sql)){
+            // Asignar Parámetros
+            ps.setString(6, id);
+            ps.setString(1, acronimo);
+            ps.setString(2, nombre);
+            ps.setString(3, codigo);
+            ps.setString(4, horasCurso);
+            ps.setString(5, curso);
+            
+            // Ejecutar SQL
+            filas = ps.executeUpdate();
+        } catch (Exception e) {
+            filas = 0;
+        }
+        
+        // Devolver Semáforo
         return filas == 1;
     }
 
+    // ---
     
+    // ALUMNO
+    @Override
+    public boolean insertarAlumno(Alumno a) 
+            throws NullPointerException, SQLException {
+         // Filas Afectadas
+        int filas;
+        
+        // SQL Inserción ( Parametrizado )
+        String sql = prp.getProperty(PRP_ALUMNO_INSERCION);
+        
+        // Alumno > Parámetros Inserción
+        String exp = a.getExp() + "";
+        String nombre = a.getNombre();
+        String apellidos = a.getApellidos();
+        String nif = a.getNif();
+        String nac = a.getNac();
+        int telefono = a.getTelefono();
+        
+        // Sentencia Preparada ( Compilación SQL )
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Asignar Parámetros
+            ps.setString(1, exp);
+            ps.setString(2, nombre);
+            ps.setString(3, apellidos);
+            ps.setString(4, nif);
+            ps.setString(5, nac);
+            ps.setInt(6, telefono);
+            
+            // Ejecución Inserción
+            filas = ps.executeUpdate();
+        }
+        
+        // Semáforo Resultado
+        return filas == 1;
+    }
 
+    // Insertar Alumno por lotes
+    // ResultSet + Fila Actual > Alumno
+    private Alumno obtenerAlumno(ResultSet rs) 
+            throws NullPointerException, SQLException{
+        String exp = rs.getString("exp");
+        String nombre = rs.getString("nombre");
+        String apellidos = rs.getString("apellidos");
+        String nif = rs.getString("nif");
+        String nac = rs.getString("nac");
+        int telefono = rs.getInt("telefono");
+        
+        return new Alumno(exp, nombre, apellidos, nif, nac, telefono);
+    }
     
+    @Override
+    public int insertarAlumnosLotes() {
+        // Filas Insertadas
+        int filas = 0;
 
-    
+        // Ruta Fichero CSV
+        String csv = prp.getProperty(PRP_ALUMNOS_CSV);
 
+        // Importar Módulos
+        List<Alumno> lista = importarAlumnos(csv);
+
+        // Obtener SQL
+        String sql = prp.getProperty(PRP_ALUMNO_INSERCION);
+
+        // Prepared Statement 
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Alumno a : lista) {
+                filas = insertarAlumno(ps, a) ? ++filas : filas;
+            }
+        } catch (Exception e) {
+            throw new NullPointerException("Error en la inserción de alumnos: "
+                    + e.getMessage());
+        }
+
+        // Devolver Filas Insertadas
+        return filas;
+    }
+
+    private List<Alumno> importarAlumnos(String csv) {
+        // Contenedor de Módulos
+        List<Alumno> lista = new ArrayList<>();
+
+        // Abrir + Utilizar + Cerrar Fichero
+        try (
+                FileReader fr = new FileReader(csv);
+                BufferedReader br = new BufferedReader(fr)) {
+            String linea;
+            do {
+                // Leer Linea Actual
+                linea = br.readLine();
+
+                // Validar Lectura
+                if (linea != null) {
+                    // Limpiar Espacios
+                    linea = linea.trim();
+
+                    // Linea > Array Items
+                    String[] items = linea.split("\\s*,\\s*");
+
+                    // Array Items > Modulo
+                    Alumno a = importarAlumnos(items);
+//                    System.out.println(m);
+                    
+                    // Modulo > Lista
+                    lista.add(a);
+                }
+            } while (linea != null);
+        } catch (Exception e) {
+            throw new NullPointerException("Importación CSV Cancelada: "
+                    + e.getMessage());
+        }
+
+        // Devolver Lista
+        return lista;
+    }
+
+    private boolean insertarAlumno(PreparedStatement ps, Alumno a) {
+        // Semaforo de Inserción
+        boolean procesoOK;
+
+        try {
+            // Extraer Parametros
+            String exp = a.getExp() + "";
+            String nombre = a.getNombre();
+            String apellidos = a.getApellidos();
+            String nif = a.getNif();
+            String nac = a.getNac() + "";
+            String telefono = a.getTelefono() + "";
+
+            // Asignar Parametros
+            ps.setString(1, exp);
+            ps.setString(2, nombre);
+            ps.setString(3, apellidos);
+            ps.setString(4, nif);
+            ps.setString(5, nac);
+            ps.setString(6, telefono);
+
+            // Ejecutar prepared Statement
+            procesoOK = ps.executeUpdate() == 1;
+        } catch (SQLException | NullPointerException e) {
+            procesoOK = false;
+        }
+        
+        return procesoOK;
+    }
+
+    private Alumno importarAlumnos(String[] items) {
+        String exp = items[0];
+        String nombre = items[1];
+        String apellidos = items[2];
+        String nif = items[3];
+        String nac = items[4];
+        int telefono = Integer.parseInt(items[5]);
     
+        return new Alumno(exp, nombre, apellidos, nif, nac, telefono);
+    }
+
+    @Override
+    public Alumno consultarAlumno(String exp) 
+            throws NullPointerException, SQLException {
+        // Referencia al Alumno
+        Alumno a = null;
+        
+        // Sentencia SQL
+        String sql = prp.getProperty(PRP_ALUMNO_CONSULTAR);
+        
+        // Abre Sentencia SQL con Parámetros
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Asignar Parámetros
+            ps.setString(1, exp);
+            
+            // Obtener Datos
+            ResultSet rs = ps.executeQuery();
+            
+            // Obtener Campos
+            if (rs.next()) {
+                // Obtener Campos
+//                String exp = rs.getString("exp");
+                String nombre = rs.getString("nombre");
+                String apellidos = rs.getString("apellidos");
+                String nif = rs.getString("nif");
+                String nac = rs.getString("nac");
+                int telefono = rs.getInt("telefono");
+                
+                // Instanciar modulo
+                a = new Alumno(
+                        exp, 
+                        nombre, 
+                        apellidos,
+                        nif, 
+                        nac, 
+                        telefono);
+            } else {
+                throw new NullPointerException("No hay datos con ese EXP");
+            }
+        }
+        
+        return a;
+    }
+
+    @Override
+    public boolean modificarAlumno(Alumno a) {
+        // Filas Afectadas
+        int filas;
+
+        // Properties > SQL
+        String sql = prp.getProperty(PRP_ALUMNO_MODIFICACION);
+        
+        // Extraer Parámetros
+        String exp = a.getExp() + "";
+        String nombre = a.getNombre();
+        String apellidos = a.getApellidos();
+        String nif = a.getNif();
+        String nac = a.getNac() + "";
+        String telefono = a.getTelefono() + "";
+        
+        // Sentencia Preparada
+        try (PreparedStatement ps = conn.prepareStatement(sql)){
+            // Asignar Parámetros
+            ps.setString(6, exp);
+            ps.setString(1, nombre);
+            ps.setString(2, apellidos);
+            ps.setString(3, nif);
+            ps.setString(4, nac);
+            ps.setString(5, telefono);
+            
+            // Ejecutar SQL
+            filas = ps.executeUpdate();
+        } catch (Exception e) {
+            filas = 0;
+        }
+        
+        // Devolver Semáforo
+        return filas == 1;
+    }
+
+    @Override
+    public List<Alumno> obtenerAlumnos() {
+        // SQL > Datos
+        ResultSet rs = null;
+        try {
+            rs = stmt.executeQuery(prp.getProperty(PRP_ALUMNO_LISTA));
+        } catch (SQLException ex) {
+            Logger.getLogger(M3Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // Lista de Alumnos
+        List<Alumno> lista = new ArrayList<>();
+        
+        try {
+            // ResultSet > ArrayList
+            while (rs.next()) {
+                lista.add(obtenerAlumno(rs));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(M3Data.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // Devolver ArrayList
+        return lista;
+    }
+
 }
+    

@@ -18,6 +18,7 @@ package org.japo.java.layers.services;
 import org.japo.java.entities.Credencial;
 import java.sql.SQLException;
 import java.util.List;
+import org.japo.java.entities.Alumno;
 import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
 
@@ -41,5 +42,31 @@ public interface S3Data {
 
     public int insertarModulosLotes()
             throws NullPointerException, SQLException;
+
+    public int borrarModulos(String[] param)
+            throws NullPointerException, SQLException;
+
+    public Modulo consultarModulo(Integer id)
+            throws NullPointerException, SQLException;
+
+    public boolean modificarModulo(Modulo m)
+            throws NullPointerException, SQLException;
+
+    public int borrarAlumnos(String[] param)
+            throws NullPointerException, SQLException;
+
+    public boolean insertarAlumno(Alumno a)
+            throws NullPointerException, SQLException;
+
+    public int insertarAlumnosLotes()
+            throws NullPointerException, SQLException;
+
+    public Alumno consultarAlumno(String exp)
+            throws NullPointerException, SQLException;
+
+    public boolean modificarAlumno(Alumno a)
+            throws NullPointerException, SQLException;
+
+    public List<Alumno> obtenerAlumnos();
 
 }
