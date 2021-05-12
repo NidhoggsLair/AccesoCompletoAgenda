@@ -16,6 +16,9 @@
 package org.japo.java.layers.services;
 
 import org.japo.java.entities.Credencial;
+import java.sql.SQLException;
+import java.util.List;
+import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
 
 /**
@@ -30,4 +33,13 @@ public interface S3Data {
     public void cerrarAccesoDatos() throws ConnectivityException;
 
     // ---
+    public List<Modulo> obtenerModulos()
+            throws NullPointerException, SQLException;
+
+    public boolean insertarModulos(Modulo m)
+            throws NullPointerException, SQLException;
+
+    public int insertarModulosLotes()
+            throws NullPointerException, SQLException;
+
 }

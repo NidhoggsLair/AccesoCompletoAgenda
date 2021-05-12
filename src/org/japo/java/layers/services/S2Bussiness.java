@@ -15,7 +15,10 @@
  */
 package org.japo.java.layers.services;
 
+import java.sql.SQLException;
+import java.util.List;
 import org.japo.java.entities.Credencial;
+import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
 
 /**
@@ -29,4 +32,14 @@ public interface S2Bussiness {
     public void cerrarAccesoDatos() throws ConnectivityException;
 
     // ---
+    public List<Modulo> obtenerModulos()
+            throws NullPointerException, SQLException;
+
+    public boolean insertarModulosManual(Modulo m)
+            throws NullPointerException, SQLException;
+
+    public int insertarModulosLotes()
+            throws NullPointerException, SQLException;
+
+
 }

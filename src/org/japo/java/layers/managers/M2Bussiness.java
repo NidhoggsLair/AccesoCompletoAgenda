@@ -15,8 +15,11 @@
  */
 package org.japo.java.layers.managers;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import org.japo.java.entities.Credencial;
+import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
 import org.japo.java.layers.services.S2Bussiness;
 import org.japo.java.layers.services.S3Data;
@@ -58,4 +61,21 @@ public final class M2Bussiness implements S2Bussiness {
     //</editor-fold>
 
     // Lógica de Negocio Adicional
+    @Override
+    public final List<Modulo> obtenerModulos() 
+            throws NullPointerException, SQLException {
+        return ds.obtenerModulos();
+    }
+
+    @Override
+    public boolean insertarModulosManual(Modulo m) 
+            throws NullPointerException, SQLException {
+        return ds.insertarModulos(m);
+    }
+    
+    @Override
+    public int insertarModulosLotes() 
+            throws NullPointerException, SQLException {
+        return ds.insertarModulosLotes();
+    }
 }

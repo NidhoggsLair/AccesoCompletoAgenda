@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright 2021 Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +19,21 @@ package org.japo.java.libraries;
  *
  * @author Adrian Bueno Olmedo - <adrian.bueno.alum@iescamp.es>
  */
-public class UtilesMenu {
+public class UtilesAgenda {
 
-    public static final String MENU_PPAL
+    // MSG Modulos
+    public static String MSG_ID = "ID: ";
+    public static String MSG_ACR = "Acronimo: ";
+    public static String MSG_NOMBR = "Nombre: ";
+    public static String MSG_COD = "Código: ";
+    public static String MSG_HOR = "Horas Curso: ";
+    public static String MSG_CUR = "Curso ";
+
+    // Mensaje de Error Genérico
+    public static final String MNU_ERROR = "ERROR: Entrada Incorrecta";
+
+    public static final String MNU_PPAL_OPC = "01234";
+    public static final String MNU_PPAL
             = "Agenda Escolar - Menú Principal\n"
             + "===============================\n"
             + "\n"
@@ -31,10 +43,9 @@ public class UtilesMenu {
             + "[ 4 ] Utilidades - Actuaciones Complementarias\n"
             + "\n"
             + "[ 0 ] Salir\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_ACT = "Agenda Escolar - Menú de Actividades \n"
+            + "\n";
+    public static final String MNU_ACT_OPC = "012345";
+    public static final String MNU_ACT = "Agenda Escolar - Menú de Actividades \n"
             + "====================================\n"
             + "\n"
             + "[ 1 ] Crear      - Nueva Actividad\n"
@@ -44,10 +55,9 @@ public class UtilesMenu {
             + "[ 5 ] Listado    - Ver todas las Actividades\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_DATOS = "Agenda Escolar - Menú de Datos\n"
+            + "\n";
+    public static final String MNU_DATOS_OPC = "012345";
+    public static final String MNU_DATOS = "Agenda Escolar - Menú de Datos\n"
             + "==============================\n"
             + "\n"
             + "[ 1 ] Alumnos    - Datos de Alumnos\n"
@@ -57,10 +67,9 @@ public class UtilesMenu {
             + "[ 5 ] Segmentos  - Datos de Clases\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_MOD = "Agenda Escolar - Menú de Módulos\n"
+            + "\n";
+    public static final String MNU_MOD_OPC = "012345";
+    public static final String MNU_MOD = "Agenda Escolar - Menú de Módulos\n"
             + "================================\n"
             + "\n"
             + "[ 1 ] Insertar   - Nuevo/s Módulo/s\n"
@@ -70,19 +79,18 @@ public class UtilesMenu {
             + "[ 5 ] Listar     - Ver todos los Módulos\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-    public static final String MENU_INS_MOD = "Agenda Escolar - Menú de Inserción de Módulos\n"
+            + "\n";
+    public static final String MNU_INSM_OPC = "012";
+    public static final String MNU_INSM = "Agenda Escolar - Menú de Inserción de Módulos\n"
             + "=============================================\n"
             + "\n"
             + "[ 1 ] Manual     - Datos por Consola\n"
             + "[ 2 ] Importar   - Datos Archivo CSV\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_ALUM = "Agenda Escolar - Menú de Alumnos\n"
+            + "\n";
+    public static final String MNU_ALUM_OPC = "012345";
+    public static final String MNU_ALUM = "Agenda Escolar - Menú de Alumnos\n"
             + "================================\n"
             + "\n"
             + "[ 1 ] Insertar   - Nuevo/s Alumno/s\n"
@@ -92,10 +100,9 @@ public class UtilesMenu {
             + "[ 5 ] Listar     - Ver todos los Alumnos\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_INS_ALUM = "Agenda Escolar - Menú de Inserción de Alumnos\n"
+            + "\n";
+    public static final String MNU_INSA_OPC = "0123";
+    public static final String MNU_INSA = "Agenda Escolar - Menú de Inserción de Alumnos\n"
             + "=============================================\n"
             + "\n"
             + "[ 1 ] Manual     - Datos por Consola\n"
@@ -103,10 +110,9 @@ public class UtilesMenu {
             + "[ 3 ] Aleatorio  - Datos Aleatorios\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_RELAC = "Agenda Escolar - Menú de Relaciones\n"
+            + "\n";
+    public static final String MNU_RELAC_OPC = "0123456";
+    public static final String MNU_RELAC = "Agenda Escolar - Menú de Relaciones\n"
             + "===================================\n"
             + "\n"
             + "[ 1 ] Currículos - Asociación de Ciclos y Módulos\n"
@@ -117,10 +123,9 @@ public class UtilesMenu {
             + "[ 6 ] Horarios   - Docencia + Segmento Horario\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-
-    public static final String MENU_UTIL = "Agenda Escolar - Menú de Utilidades\n"
+            + "\n";
+    public static final String MNU_UTIL_OPC = "0123456";
+    public static final String MNU_UTIL = "Agenda Escolar - Menú de Utilidades\n"
             + "===================================\n"
             + "\n"
             + "[ 1 ] Generación de Nombre\n"
@@ -131,8 +136,5 @@ public class UtilesMenu {
             + "[ 6 ] Generación de Contraseña\n"
             + "\n"
             + "[ 0 ] Menú Anterior\n"
-            + "\n"
-            + "Opción: ";
-    
-    
+            + "\n";
 }

@@ -15,13 +15,19 @@
  */
 package org.japo.java.layers.managers;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import org.japo.java.entities.Credencial;
+import org.japo.java.entities.Modulo;
 import org.japo.java.exceptions.ConnectivityException;
 import org.japo.java.layers.services.S3Data;
 
@@ -40,6 +46,11 @@ public final class M3Data implements S3Data {
     public static final String PRP_CONN_DBNM = "jdbc.conn.dbnm";
     public static final String PRP_CONN_USER = "jdbc.conn.user";
     public static final String PRP_CONN_PASS = "jdbc.conn.pass";
+    
+    // Propiedades SQL
+    public static final String PRP_MODULO_LISTA = "agenda.modulo.lista";
+    public static final String PRP_MODULO_INSERCION = "agenda.modulo.insercion";
+    public static final String PRP_MODULO_CSV = "agenda.modulos.csv";
 
     // Sentencia BBDD - Tipo de Acceso
     public static final String STMT_ACCT_TFLY = "TYPE_FORWARD_ONLY";
@@ -186,4 +197,194 @@ public final class M3Data implements S3Data {
     //</editor-fold>
 
     // Lógica de Acceso a Datos Adicional
+    // Obtener Modulos
+    @Override
+    public final List<Modulo> obtenerModulos() 
+            throws NullPointerException, SQLException {
+        // SQL > Datos
+        ResultSet rs = stmt.executeQuery(prp.getProperty(PRP_MODULO_LISTA));
+        
+        // Lista de Modulos
+        List<Modulo> lista = new ArrayList<>();
+        
+        // ResultSet > ArrayList
+        while (rs.next()) {
+            lista.add(obtenerModulo(rs));
+        }
+        
+        // Devolver ArrayList
+        return lista;
+    }
+
+    // ---
+    // Insertar modulos manualmente
+    @Override
+    public boolean insertarModulos(Modulo m) 
+            throws NullPointerException, SQLException {
+        // Filas Afectadas
+        int filas;
+        
+        // SQL Inserción ( Parametrizado )
+        String sql = prp.getProperty(PRP_MODULO_INSERCION);
+        
+        // Módulo > Parámetros Inserción
+        String id = m.getId() + "";
+        String acronimo = m.getAcronimo();
+        String nombre = m.getNombre();
+        String codigo = m.getCodigo();
+        String horasCurso = m.getHorasCurso() + "";
+        String curso = m.getCurso() + "";
+        
+        // Sentencia Preparada ( Compilación SQL )
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            // Asignar Parámetros
+            ps.setString(1, id);
+            ps.setString(2, acronimo);
+            ps.setString(3, nombre);
+            ps.setString(4, codigo);
+            ps.setString(5, horasCurso);
+            ps.setString(6, curso);
+            
+            // Ejecución Inserción
+            filas = ps.executeUpdate();
+        }
+        
+        // Semáforo Resultado
+        return filas == 1;
+    }
+    
+    // ---
+    
+    // Insertar Modulo por lotes
+    // ResultSet + Fila Actual > Modulo
+    private Modulo obtenerModulo(ResultSet rs) 
+            throws NullPointerException, SQLException{
+        int id = rs.getInt("id");
+        String acronimo = rs.getString("acronimo");
+        String nombre = rs.getString("nombre");
+        String codigo = rs.getString("codigo");
+        int horasCurso = rs.getInt("horasCurso");
+        int curso = rs.getInt("curso");
+        
+        return new Modulo(id, acronimo, nombre, codigo, horasCurso, curso);
+    }
+
+    @Override
+    public int insertarModulosLotes()
+            throws NullPointerException, SQLException {
+        // Ruta Fichero CSV
+        String csv = prp.getProperty(PRP_MODULO_CSV);
+
+        // Importar Fichero CSV > ArrayList<Modulo>
+        List<Modulo> lista = importarModulos(csv);
+
+        // SQL Inserción
+        String sql = prp.getProperty(PRP_MODULO_INSERCION);
+
+        // Filas Afectadas
+        int filas = 0;
+
+        // Apertura + Cierre Automático > Prepared Statement
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Modulo m : lista) {
+                filas = insertarModulo(ps, m) ? filas + 1 : filas;
+            }
+        }
+
+        // Devolver Filas Afectadas
+        return filas;
+    }
+    // Lógica de Acceso a Datos Adicional
+
+    private List<Modulo> importarModulos(String csv) {
+        // Lista de Módulos
+        List<Modulo> lista = new ArrayList<>();
+
+        try (
+                FileReader fr = new FileReader(csv);
+                BufferedReader br = new BufferedReader(fr)) {
+            // Declaración de la Linea
+            String linea;
+            // Bucle Recorrido del Fichero por Lineas
+            do {
+                // Linea Actual recien leida
+                linea = br.readLine().trim();
+
+                // Linea (String) > Modulo
+                Modulo m = convertirLinea(linea);
+
+                // Añadir Módulo a la Lista
+                lista.add(m);
+            } while (linea != null && linea.length() > 0);
+        } catch (Exception e) {
+        }
+
+        // Devolver Lista de Módulos
+        return lista;
+    }
+
+    // String + Separador > String[]
+    private Modulo convertirLinea(String linea) {
+        // Separador Items
+        final String SEPARADOR = "\\s*,\\s*";
+
+        // Lista de Items
+        String[] items = linea.split(SEPARADOR);
+
+        // Campos del Módulo
+        int id = Integer.parseInt(items[0]);
+        String acronimo = items[1];
+        String nombre = items[2];
+        String codigo = items[3];
+        int horasCurso = Integer.parseInt(items[4]);
+        int curso = Integer.parseInt(items[5]);
+
+        // Instanciar + Devolver Modulo
+        return new Modulo(id, acronimo, nombre, codigo, horasCurso, curso);
+    }
+
+    // Modulo > Insercion BD
+    
+    public boolean insertarModulo(PreparedStatement ps, Modulo m) 
+            throws NullPointerException, SQLException{
+        // Número de filas Afectadas
+        int filas;
+        String _acronimo = "";
+
+        try {
+            // Obtener Parametros
+            String id = m.getId() + "";
+            String acronimo = m.getAcronimo();
+            _acronimo = m.getAcronimo();
+            String nombre = m.getNombre();
+            String codigo = m.getCodigo();
+            String horasCurso = m.getHorasCurso() + "";
+            String curso = m.getCurso() + "";
+
+            // Aplicar Parámetros
+            ps.setString(1, id);
+            ps.setString(2, acronimo);
+            ps.setString(3, nombre);
+            ps.setString(4, codigo);
+            ps.setString(5, horasCurso);
+            ps.setString(6, curso);
+
+            // Ejecutar Insercion
+            filas = ps.executeUpdate();
+            System.out.printf("Modulo %s SI insertado%n", _acronimo);
+        } catch (SQLException | NullPointerException x) {
+            filas = 0;
+            System.out.printf("Modulo %s NO insertado%n", _acronimo);
+        }
+
+        return filas == 1;
+    }
+
+    
+
+    
+
+    
+
+    
 }
